@@ -650,11 +650,11 @@
         </div>
 
         <div>
-          <div class="form-fields" id="inscripcionForm">
+          <form class="form-fields" id="inscripcionForm" action="https://formsubmit.co/madcode.info@gmail.com" method="POST">
 
             <div class="field-group">
               <label>1. Nombre artístico <span>*</span></label>
-              <input type="text" id="f-nombre" placeholder="Tu nombre o alias"/>
+              <input type="text" name="nombre" placeholder="Tu nombre o alias" required/>
             </div>
 
             <div class="field-group">
@@ -685,21 +685,22 @@
 
             <div class="field-group">
               <label>3. ¿Qué género o estilo te define más? <span>*</span></label>
-              <input type="text" id="f-genero" placeholder="Ej: hyperpop, electrónica, pop..."/>
+              <input type="text" name="genero" placeholder="Ej: hyperpop, electrónica, pop..." required/>
             </div>
 
             <div class="field-group">
               <label>4. ¿Por qué te gustaría tener un espacio en nuestro evento?</label>
-              <textarea id="f-porque" placeholder="Cuéntanos..."></textarea>
+              <textarea name="porque" placeholder="Cuéntanos..."></textarea>
             </div>
 
             <div class="field-group">
               <label>5. Tu Instagram para contactarte <span>*</span></label>
-              <input type="text" id="f-instagram" placeholder="@tuusuario"/>
+              <input type="text" name="instagram" placeholder="@tuusuario" required/>
             </div>
 
-            <button class="btn-submit" onclick="handleSubmit()">Enviar solicitud →</button>
-          </div>
+            <button type="submit" class="btn-submit">Enviar solicitud →</button>
+            <input type="hidden" name="_captcha" value="false"/>
+          </form>
 
           <div class="form-success" id="formSuccess">
             <h3>Recibido.</h3>
@@ -748,37 +749,30 @@
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(r => observer.observe(r));
 
-    // Form submit — compila los datos y abre mailto
-    function handleSubmit() {
-      const nombre    = document.getElementById('f-nombre').value.trim();
-      const genero    = document.getElementById('f-genero').value.trim();
-      const porque    = document.getElementById('f-porque').value.trim();
-      const instagram = document.getElementById('f-instagram').value.trim();
-
+    // Form submit — valida y envía mediante FormSubmit
+    document.getElementById('inscripcionForm').addEventListener('submit', function(e) {
       const tipos = [...document.querySelectorAll('input[name=tipo]:checked')]
                       .map(c => c.value).join(', ');
-
-      if (!nombre || !tipos || !genero || !instagram) {
-        alert('Por favor rellena todos los campos obligatorios (*).');
+      
+      if (!tipos) {
+        e.preventDefault();
+        alert('Por favor selecciona al menos un tipo de artista.');
         return;
       }
-
-      const subject = encodeURIComponent('Solicitud artista — ' + nombre);
-      const body = encodeURIComponent(
-        'SOLICITUD MAD CODE\n' +
-        '==================\n\n' +
-        '1. Nombre artístico: ' + nombre + '\n' +
-        '2. Tipo de artista: ' + tipos + '\n' +
-        '3. Género / estilo: ' + genero + '\n' +
-        '4. Por qué quiere participar: ' + (porque || '—') + '\n' +
-        '5. Instagram: ' + instagram + '\n'
-      );
-
-      window.location.href = 'mailto:madcode.info@gmail.com?subject=' + subject + '&body=' + body;
-
-      document.getElementById('inscripcionForm').style.display = 'none';
-      document.getElementById('formSuccess').style.display = 'block';
-    }
+      
+      // Agregar tipos al formulario como campo oculto
+      const tipoField = document.createElement('input');
+      tipoField.type = 'hidden';
+      tipoField.name = 'tipo';
+      tipoField.value = tipos;
+      this.appendChild(tipoField);
+      
+      // Mostrar mensaje de éxito después de enviar
+      setTimeout(() => {
+        document.getElementById('inscripcionForm').style.display = 'none';
+        document.getElementById('formSuccess').style.display = 'block';
+      }, 100);
+    });
   </script>
 
 </body>
