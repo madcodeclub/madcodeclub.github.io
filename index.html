@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MAD CODE</title>
+  <link rel="icon" href="LOGO4.png" type="image/png">
   <style>
     @font-face {
       font-family: 'IntegralCF';
@@ -343,8 +344,8 @@
     }
 
     .section-title {
-      font-family: 'IntegralCF', sans-serif;
-      font-weight: 900;
+      font-family: 'NeueMontreal', sans-serif;
+      font-weight: 700;
       font-size: clamp(2.5rem, 6vw, 5rem);
       line-height: 0.95;
       margin-bottom: 3rem;
@@ -743,41 +744,40 @@
           <p>Revisamos todas las solicitudes y contactamos con los artistas seleccionados.</p>
           <span class="req">Plazas limitadas</span>
         </div>
-        <div>
-          <div class="form-fields" id="inscripcionForm">
-            <div class="field-group">
-              <label>Nombre artístico *</label>
-              <input type="text" id="nombre" placeholder="Tu nombre o alias" />
-            </div>
-            <div class="field-group">
-              <label>Email de contacto *</label>
-              <input type="email" id="email" placeholder="tu@email.com" />
-            </div>
-            <div class="field-group">
-              <label>Rol *</label>
-              <select id="rol">
-                <option value="" disabled selected>Selecciona tu rol</option>
-                <option value="dj">DJ</option>
-                <option value="productor">Productor/a</option>
-                <option value="cantante">Cantante</option>
-                <option value="live">Live Act</option>
-                <option value="otro">Otro</option>
-              </select>
-            </div>
-            <div class="field-group">
-              <label>Link a tu música *</label>
-              <input type="url" id="link" placeholder="Soundcloud, Spotify, etc." />
-            </div>
-            <div class="field-group">
-              <label>Cuéntanos algo</label>
-              <textarea id="bio" placeholder="Tu propuesta, influencias, lo que quieras..."></textarea>
-            </div>
-            <button class="btn-submit" onclick="handleSubmit()">Enviar solicitud →</button>
+        <form action="https://formspree.io/f/xvozgpkq" method="POST" class="form-fields" id="inscripcionForm">
+          <div class="field-group">
+            <label>Nombre artístico *</label>
+            <input type="text" name="nombre" placeholder="Tu nombre o alias" required />
           </div>
-          <div class="form-success" id="formSuccess">
-            <h3>Recibido.</h3>
-            <p>Te contactamos si encajas en el line-up.</p>
+          <div class="field-group">
+            <label>Email de contacto *</label>
+            <input type="email" name="email" placeholder="tu@email.com" required />
           </div>
+          <div class="field-group">
+            <label>Rol *</label>
+            <select name="rol" required>
+              <option value="" disabled selected>Selecciona tu rol</option>
+              <option value="dj">DJ</option>
+              <option value="productor">Productor/a</option>
+              <option value="cantante">Cantante</option>
+              <option value="live">Live Act</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label>Link a tu música *</label>
+            <input type="url" name="link" placeholder="Soundcloud, Spotify, etc." required />
+          </div>
+          <div class="field-group">
+            <label>Cuéntanos algo</label>
+            <textarea name="bio" placeholder="Tu propuesta, influencias, lo que quieras..."></textarea>
+          </div>
+          <input type="hidden" name="_to" value="madcode.info@gmail.com" />
+          <button type="submit" class="btn-submit">Enviar solicitud →</button>
+        </form>
+        <div class="form-success" id="formSuccess">
+          <h3>Recibido.</h3>
+          <p>Te contactamos si encajas en el line-up.</p>
         </div>
       </div>
     </div>
@@ -820,18 +820,27 @@
     }, { threshold: 0.1 });
     reveals.forEach(r => observer.observe(r));
 
-    function handleSubmit() {
-      const nombre = document.getElementById('nombre').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const rol = document.getElementById('rol').value;
-      const link = document.getElementById('link').value.trim();
-      if (!nombre || !email || !rol || !link) {
-        alert('Por favor rellena todos los campos obligatorios.');
-        return;
-      }
-      document.getElementById('inscripcionForm').style.display = 'none';
-      document.getElementById('formSuccess').style.display = 'block';
-    }
+    // Manejo del formulario con formspree
+    document.getElementById('inscripcionForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      
+      fetch('https://formspree.io/f/xvozgpkq', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      }).then(response => {
+        if (response.ok) {
+          document.getElementById('inscripcionForm').style.display = 'none';
+          document.getElementById('formSuccess').style.display = 'block';
+        }
+      }).catch(error => {
+        console.error('Error:', error);
+        alert('Hubo un error al enviar el formulario. Por favor intenta de nuevo.');
+      });
+    });
   </script>
 
 </body>
